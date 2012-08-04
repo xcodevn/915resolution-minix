@@ -23,7 +23,9 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <fcntl.h>
+#ifndef __minix
 #include <sys/io.h>
+#endif /* !__minix */
 #include <unistd.h>
 #include <assert.h>
 
