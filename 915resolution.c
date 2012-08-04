@@ -35,7 +35,7 @@
 int iopl(int a) { return 0;}
 /* copied from rtl8139 */
 unsigned inb(u16_t port) {
-        u8_t value;
+        u32_t value;
         sys_inb(port, &value);
         return value;
 }
@@ -342,9 +342,17 @@ vbios_map * open_vbios(char * filename, chipset_type forced_chipset) {
             exit(2);
         }
         
+#ifndef __minix        
         map->bios_ptr = mmap(0, VBIOS_SIZE,
                              PROT_READ | PROT_WRITE, MAP_SHARED,
                              map->bios_fd, VBIOS_START);
+#else        
+        {
+            void * ptr = malloc(VBIOS_SIZE);
+            pread(map->bios_fd, ptr, VBIOS_SIZE, VBIOS_START);
+            map->bios_ptr = ptr;
+        }
+#endif
         
         if (map->bios_ptr == MAP_FAILED) {
             if (map->chipset == CT_UNKWN) {
@@ -365,9 +373,17 @@ vbios_map * open_vbios(char * filename, chipset_type forced_chipset) {
             exit(2);
         }
         
+#ifndef __minix        
         map->bios_ptr = mmap(0, VBIOS_SIZE,
                              PROT_READ | PROT_WRITE, MAP_SHARED,
                              map->bios_fd, 0);
+#else        
+        {
+            void * ptr = malloc(VBIOS_SIZE);
+            pread(map->bios_fd, ptr, VBIOS_SIZE, 0);
+            map->bios_ptr = ptr;
+        }
+#endif
         
         if (map->bios_ptr == MAP_FAILED) {
             if (map->chipset == CT_UNKWN) {
@@ -508,7 +524,12 @@ void close_vbios(vbios_map * map) {
         exit(2);
     }
 
+#ifndef __minix
     munmap(map->bios_ptr, VBIOS_SIZE);
+#else
+    free(map->bios_ptr);
+#endif
+
     close(map->bios_fd);
 
     FREE(map);
@@ -768,6 +789,13 @@ void set_mode(vbios_map * map, cardinal mode, cardinal x, cardinal y, cardinal b
             }
         }
     }
+#ifdef __minix
+    /* write out change to file */
+    /* FIXME: This may not work when filename was given */
+    lseek(map->bios_fd, VBIOS_START, SEEK_SET);
+    write(map->bios_fd, map->bios_ptr, VBIOS_SIZE);
+#endif
+
 }   
 
 void display_map_info(vbios_map * map) {
