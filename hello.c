@@ -173,9 +173,6 @@ static int sef_cb_init(int type, sef_init_info_t *UNUSED(info))
 
 int main(void)
 {
-     int rt;
-     sys_inb(0xcf8, &rt);
-     printf("result: %x\n", rt);
     /*
      * Perform initialization.
      */
