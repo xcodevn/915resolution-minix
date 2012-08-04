@@ -4,7 +4,7 @@ PROG=	915hack
 SRCS=	hello.c 915resolution.c # add 915resolution.c
 
 DPADD+=	${LIBCHARDRIVER} ${LIBSYS}
-LDADD+=	-lchardriver -lsys
+LDADD+=	-lchardriver -lsys -lc
 
 MAN=
 
