@@ -1,10 +1,13 @@
-# Makefile for the hello driver.
 # change name of this driver to "915hack"
-PROG=	915hack
-SRCS=	hello.c 915resolution.c # add 915resolution.c
+PROG=	915resolution
+SRCS=	915resolution.c 
+FILES=  $(PROG).conf
+FILESNAME=$(PROG)
+FILESDIR=/etc/system.conf.d    
+    
 
-DPADD+=	${LIBCHARDRIVER} ${LIBSYS}
-LDADD+=	-lchardriver -lsys -lc
+DPADD+=	${LIBSYS}
+LDADD+=	-lsys -lc
 
 MAN=
 
