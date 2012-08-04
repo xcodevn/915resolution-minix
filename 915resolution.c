@@ -23,12 +23,35 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <fcntl.h>
-#ifndef __minix
+#ifdef __minix
+#include <minix/syslib.h>
+#else
 #include <sys/io.h>
 #endif /* !__minix */
 #include <unistd.h>
 #include <assert.h>
 
+#ifdef __minix
+int iopl(int a) { return 0;}
+/* copied from rtl8139 */
+unsigned inb(u16_t port) {
+        u8_t value;
+        sys_inb(port, &value);
+        return value;
+}
+unsigned inl(u16_t port) {
+        u32_t value;
+        sys_inl(port, &value);
+        return value;
+}
+
+void outb(u8_t value, u16_t port) {
+        sys_outb(port, value);
+}
+void outl( u32_t value, u16_t port) {
+        sys_outl(port, value);
+}
+#endif /* __minix */
 
 
 #define NEW(a) ((a *)(calloc(1, sizeof(a))))
